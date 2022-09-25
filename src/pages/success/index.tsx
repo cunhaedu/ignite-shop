@@ -5,6 +5,7 @@ import Stripe from 'stripe';
 import { ImageContainer, SuccessContainer } from '../../styles/pages/success';
 import { stripe } from '../../lib/stripe';
 import Image from 'next/future/image';
+import Head from 'next/head';
 
 interface SuccessProps {
   customerName: string;
@@ -16,24 +17,32 @@ interface SuccessProps {
 
 export default function Success({ customerName, product }: SuccessProps) {
   return (
-    <SuccessContainer>
-      <h1>Compra Efetuada!</h1>
+    <>
+      <Head>
+        <title>Ignite Shop | Compra realizada com sucesso</title>
 
-      <ImageContainer>
-        <Image
-          src={product.imageUrl}
-          alt={product.name}
-          width={120}
-          height={110}
-        />
-      </ImageContainer>
+        <meta name='robots' content='noindex' />
+      </Head>
 
-      <p>
-        Uhuul <strong>{customerName}</strong>, sua <strong>{product.name}</strong> já está a caminho da sua casa.
-      </p>
+      <SuccessContainer>
+        <h1>Compra Efetuada!</h1>
 
-      <Link href="/">voltar ao catálogo</Link>
-    </SuccessContainer>
+        <ImageContainer>
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            width={120}
+            height={110}
+          />
+        </ImageContainer>
+
+        <p>
+          Uhuul <strong>{customerName}</strong>, sua <strong>{product.name}</strong> já está a caminho da sua casa.
+        </p>
+
+        <Link href="/">voltar ao catálogo</Link>
+      </SuccessContainer>
+    </>
   )
 }
 

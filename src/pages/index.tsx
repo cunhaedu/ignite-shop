@@ -10,6 +10,7 @@ import { stripe } from '../lib/stripe';
 import 'keen-slider/keen-slider.min.css';
 import Link from 'next/link';
 import { formatPrice } from '../helpers/formatPrice.helper';
+import Head from 'next/head';
 
 interface IHomeProps {
   products: IProduct[];
@@ -29,25 +30,31 @@ export default function Home({ products }: IHomeProps) {
   });
 
   return (
-    <HomeContainer ref={sliderRef} className="keen-slider">
-      {products.map(product => (
-        <Link key={product.id} href={`/products/${product.id}`}>
-          <Product className="keen-slider__slide">
-          <Image
-            src={product.imageUrl}
-            width={520}
-            height={480}
-            alt={product.name}
-          />
+    <>
+      <Head>
+        <title>Ignite Shop</title>
+      </Head>
 
-          <footer>
-            <strong>{product.name}</strong>
-            <span>{product.price}</span>
-          </footer>
-        </Product>
-        </Link>
-      ))}
-    </HomeContainer>
+      <HomeContainer ref={sliderRef} className="keen-slider">
+        {products.map(product => (
+          <Link key={product.id} href={`/products/${product.id}`}>
+            <Product className="keen-slider__slide">
+            <Image
+              src={product.imageUrl}
+              width={520}
+              height={480}
+              alt={product.name}
+            />
+
+            <footer>
+              <strong>{product.name}</strong>
+              <span>{product.price}</span>
+            </footer>
+          </Product>
+          </Link>
+        ))}
+      </HomeContainer>
+    </>
   )
 }
 

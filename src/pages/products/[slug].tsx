@@ -13,6 +13,7 @@ import {
   ProductContainer,
   ProductDetails
 } from '../../styles/pages/product';
+import Head from 'next/head';
 
 type Params = ParsedUrlQuery & {
   slug: string;
@@ -43,30 +44,35 @@ export default function Product({ product }: IProductProps) {
   }
 
   return (
-    <ProductContainer>
-      <ImageContainer>
-        <Image
-          src={product.imageUrl}
-          alt={product.name}
-          width={520}
-          height={480}
-        />
-      </ImageContainer>
+    <>
+      <Head>
+        <title>Ignite Shop | {product.name}</title>
+      </Head>
+      <ProductContainer>
+        <ImageContainer>
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            width={520}
+            height={480}
+          />
+        </ImageContainer>
 
-      <ProductDetails>
-        <h1>{product.name}</h1>
-        <span>{product.price}</span>
+        <ProductDetails>
+          <h1>{product.name}</h1>
+          <span>{product.price}</span>
 
-        <p>{product.description}</p>
+          <p>{product.description}</p>
 
-        <button
-          onClick={handleBuyProduct}
-          disabled={isCreatingCheckoutSession}
-        >
-          Comprar Agora
-        </button>
-      </ProductDetails>
-    </ProductContainer>
+          <button
+            onClick={handleBuyProduct}
+            disabled={isCreatingCheckoutSession}
+          >
+            Comprar Agora
+          </button>
+        </ProductDetails>
+      </ProductContainer>
+    </>
   )
 }
 
@@ -82,11 +88,27 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params as Params;
 
-  const product = await stripe.products.retrieve(slug, {
-    expand: ['default_price'],
-  });
+  try {
+    const product = await stripe.products.retrieve(slug, {
+      expand: ['default_price'],
+    });
 
-  if (!product) {
+    const productPrice = product.default_price as Stripe.Price;
+
+    return {
+      props: {
+        product: {
+          id: product.id,
+          description: product.description,
+          imageUrl: product.images[0],
+          name: product.name,
+          price: formatPrice(productPrice.unit_amount),
+          defaultPriceId: productPrice.id,
+        }
+      },
+      revalidate: 60 * 60 * 12 // 12 hours
+    };
+  } catch (error) {
     return {
       redirect: {
         permanent: false,
@@ -94,20 +116,4 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
       }
     }
   }
-
-  const productPrice = product.default_price as Stripe.Price;
-
-  return {
-    props: {
-      product: {
-        id: product.id,
-        description: product.description,
-        imageUrl: product.images[0],
-        name: product.name,
-        price: formatPrice(productPrice.unit_amount),
-        defaultPriceId: productPrice.id,
-      }
-    },
-    revalidate: 60 * 60 * 12 // 12 hours
-  };
 };
