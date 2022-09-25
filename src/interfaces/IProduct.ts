@@ -5,4 +5,5 @@ export interface IProduct {
   imageUrl: string;
   url: string;
   price: string;
+  defaultPriceId: string;
 }
