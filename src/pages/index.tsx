@@ -9,6 +9,7 @@ import { stripe } from '../lib/stripe';
 
 import 'keen-slider/keen-slider.min.css';
 import Link from 'next/link';
+import { formatPrice } from '../helpers/formatPrice.helper';
 
 interface IHomeProps {
   products: IProduct[];
@@ -64,10 +65,7 @@ export const getStaticProps: GetStaticProps = async () => {
       name: product.name,
       imageUrl: product.images[0],
       url: product.url,
-      price: new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      }).format(price.unit_amount / 100),
+      price: formatPrice(price.unit_amount),
     }
   });
 
